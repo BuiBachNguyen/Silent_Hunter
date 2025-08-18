@@ -19,12 +19,12 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] MazeData mazeData;
     [SerializeField] Block[,] map;
     [SerializeField] List<GameObject> obstaclesPrefabs;
-    public GameObject camera;
+    [SerializeField] private new GameObject camera;
 
     void Start()
     {
         // Gán Main Camera vào MazeData khi bắt đầu game
-        mazeData.camera = Camera.main.gameObject;
+        mazeData.camera = camera; //Camera.main.gameObject;
 
         // Gọi hàm đặt vị trí camera
         mazeData.SetCamPos();
