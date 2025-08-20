@@ -22,12 +22,10 @@ public class EmptyBlock : Block, IPointerEnterHandler, IPointerExitHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         OnHoverEnter?.Invoke(transform.position);
-        Debug.Log("Hover ENTER: " + gameObject.name);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        OnHoverExit?.Invoke(transform.position);
-        Debug.Log("Hover EXIT: " + gameObject.name);
+        //OnHoverExit?.Invoke(transform.position);
     }
 }
