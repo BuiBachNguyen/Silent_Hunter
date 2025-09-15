@@ -19,16 +19,14 @@ public class PathFinder : MonoBehaviour
     }
     #endregion
 
-    [SerializeField] private GameObject player;
+    [SerializeField] private PlayerController player;
     [SerializeField] MazeData mazeData;
     [SerializeField] List<Vector3Int> playerToGoals;
 
     private void Start()
     {
-        player = GameObject.FindWithTag("Player");
+
     }
-
-
 
 
     private Vector3Int[] directions = new Vector3Int[]
@@ -50,7 +48,7 @@ public class PathFinder : MonoBehaviour
 
         while (open.Count > 0)
         {
-            // lấy node có f nhỏ nhất
+            // get node f min
             open.Sort((a, b) => a.f.CompareTo(b.f));
             Node current = open[0];
             open.RemoveAt(0);
@@ -67,7 +65,7 @@ public class PathFinder : MonoBehaviour
                 if (!IsInside(neighborPos) || IsWall(neighborPos) || closed.Contains(neighborPos))
                     continue;
 
-                float tentativeG = current.g + 1; // cost = 1 mỗi bước
+                float tentativeG = current.g + 1; // cost = 1 per step
 
                 Node neighbor = open.Find(n => n.position == neighborPos);
                 if (neighbor == null)
@@ -83,7 +81,7 @@ public class PathFinder : MonoBehaviour
                 }
             }
         }
-        return null; // không tìm thấy
+        return null; 
     }
 
     private bool IsInside(Vector3Int pos)
@@ -93,7 +91,7 @@ public class PathFinder : MonoBehaviour
 
     private bool IsWall(Vector3Int pos)
     {
-        return mazeData.maze[pos.z].row[pos.x] == 1; // chú ý: z = row, x = col
+        return mazeData.maze[pos.z].row[pos.x] == 1; // z = row, x = col
     }
 
     private float Heuristic(Vector3Int a, Vector3Int b)
@@ -138,42 +136,17 @@ public class PathFinder : MonoBehaviour
 
         if (playerToGoals != null)
         {
-            //Debug.Log("Path length: " + playerToGoals.Count);
-            //foreach (var step in playerToGoals)
-            //    Debug.Log("Step: " + step);
-            StartCoroutine(MoveAlongPath(playerToGoals));
+            // Gọi PlayerMover
+            player = player.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                player.SetPath(playerToGoals);
+            }
         }
         else
         {
             Debug.Log("Không tìm thấy đường!");
         }
-    }
-
-    [SerializeField] private float moveSpeed = 5f;
-    private Coroutine moveCoroutine;
-
-    private IEnumerator MoveAlongPath(List<Vector3Int> path)
-    {
-        foreach (var step in path)
-        {
-            Vector3 targetPos = new Vector3(step.x, player.transform.position.y, step.z);
-
-            // Di chuyển tới vị trí step
-            while (Vector3.Distance(player.transform.position, targetPos) > 0.05f)
-            {
-                player.transform.position = Vector3.MoveTowards(
-                    player.transform.position,
-                    targetPos,
-                    moveSpeed * Time.deltaTime
-                );
-                yield return null; // đợi frame sau
-            }
-
-            // Snap về đúng vị trí (tránh sai số float)
-            player.transform.position = targetPos;
-        }
-
-        moveCoroutine = null; // reset khi xong
     }
 
 }
