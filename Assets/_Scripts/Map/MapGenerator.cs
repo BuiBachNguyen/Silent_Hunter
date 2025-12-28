@@ -13,6 +13,8 @@ public class MapGenerator : MonoBehaviour
             return;
         }
         Instance = this;
+
+        SetUp();
     }
     #endregion
 
@@ -20,8 +22,7 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] Block[,] map;
     [SerializeField] List<GameObject> obstaclesPrefabs;
     [SerializeField] private new GameObject camera;
-
-    void Start()
+    void SetUp()
     {
         // Gán Main Camera vào MazeData khi bắt đầu game
         mazeData.camera = camera; //Camera.main.gameObject;
@@ -40,7 +41,7 @@ public class MapGenerator : MonoBehaviour
             {
                 Vector3 pos = new Vector3(x, 1, z);
 
-                int cellValue = maze[z].row[x]; 
+                int cellValue = maze[z].row[x];
 
                 if (cellValue == 0)
                 {
@@ -54,7 +55,16 @@ public class MapGenerator : MonoBehaviour
                     GameObject go = Instantiate(obstaclesPrefabs[1], pos, Quaternion.identity, this.transform);
                     map[x, z] = go.GetComponent<Wall>();
                 }
+                else if (cellValue == 2)
+                {
+                    GameObject go = Instantiate(obstaclesPrefabs[2], pos, Quaternion.EulerRotation(90, -90f, 0), this.transform);
+                    map[x, z] = go.GetComponent<EnemyController>();
+                }
             }
         }
+    }    
+    void Start()
+    {
+
     }
 }

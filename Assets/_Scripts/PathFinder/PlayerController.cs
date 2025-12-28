@@ -5,16 +5,24 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 50.0f;
+    [SerializeField] private float moveSpeed = 20.0f;
+
+    [SerializeField] private float rotateSpeed = 90f;
+    private Quaternion targetRotation;
+    private Vector3 rotationOffsetEuler = new Vector3(90, -90f, 0);
+
 
     private List<Vector3> path;
     private int currentStep = 0;
     private bool isMoving = false;
     private Transform player;
 
+    Animator animator;
+
     private void Awake()
     {
         player = transform; // nếu script gắn trên Player
+        animator = GetComponent<Animator>();
     }
 
     public void SetPath(List<Vector3Int> newPath)
@@ -27,9 +35,10 @@ public class PlayerController : MonoBehaviour
         }
         currentStep = 0;
         isMoving = path.Count > 0;
+        animator.SetBool("isMoving", isMoving);
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (!isMoving || path == null || currentStep >= path.Count)
             return;
@@ -47,11 +56,35 @@ public class PlayerController : MonoBehaviour
             player.position = targetPos;
             currentStep++;
 
-            if (currentStep >= path.Count)
+
+            if (currentStep < path.Count)
+            {
+                Vector3 nextDir = (path[currentStep] - player.position).normalized;
+                UpdateRotation(nextDir); // ✅ XOAY 1 LẦN
+            }
+            else if (currentStep >= path.Count)
             {
                 isMoving = false; // đã đi hết path
+                animator.SetBool("isMoving", isMoving);
             }
         }
+        player.rotation = Quaternion.Slerp(
+                        player.rotation,
+                        targetRotation,
+                        rotateSpeed * Time.deltaTime
+                        );
+
     }
+
+
+    void UpdateRotation(Vector3 direction)
+    {
+        if (direction == Vector3.zero) return;
+
+        Quaternion lookRot = Quaternion.LookRotation(direction, Vector3.up);
+        Quaternion offset = Quaternion.Euler(rotationOffsetEuler);
+        targetRotation = lookRot * offset;
+    }
+
 }
 
