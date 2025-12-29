@@ -43,26 +43,35 @@ public class MapGenerator : MonoBehaviour
 
                 int cellValue = maze[z].row[x];
 
-                if (cellValue == 0)
+                GameObject go;
+
+                switch (cellValue)
                 {
-                    // Instantiate empty block prefab
-                    GameObject go = Instantiate(obstaclesPrefabs[0], pos, Quaternion.identity, this.transform);
-                    map[x, z] = go.GetComponent<EmptyBlock>();
-                }
-                else if (cellValue == 1)
-                {
-                    // Instantiate wall prefab
-                    GameObject go = Instantiate(obstaclesPrefabs[1], pos, Quaternion.identity, this.transform);
-                    map[x, z] = go.GetComponent<Wall>();
-                }
-                else if (cellValue == 2)
-                {
-                    GameObject go = Instantiate(obstaclesPrefabs[2], pos, Quaternion.EulerRotation(90, -90f, 0), this.transform);
-                    map[x, z] = go.GetComponent<EnemyController>();
+                    case 0:
+                        // Instantiate empty block prefab
+                        go = Instantiate(obstaclesPrefabs[0], pos, Quaternion.identity, this.transform);
+                        map[x, z] = go.GetComponent<EmptyBlock>();
+                        break;
+
+                    case 1:
+                        // Instantiate wall prefab
+                        go = Instantiate(obstaclesPrefabs[1], pos, Quaternion.identity, this.transform);
+                        map[x, z] = go.GetComponent<Wall>();
+                        break;
+                    case 2:
+                        go = Instantiate(obstaclesPrefabs[0], pos, Quaternion.identity, this.transform);
+                        map[x, z] = go.GetComponent<EmptyBlock>();
+                        GameObject enemy = Instantiate(obstaclesPrefabs[2], pos, Quaternion.EulerRotation(90, -90f, 0), this.transform);
+                        break;
+                    default:
+                        // Instantiate empty block prefab
+                        go = Instantiate(obstaclesPrefabs[0], pos, Quaternion.identity, this.transform);
+                        map[x, z] = go.GetComponent<EmptyBlock>();
+                        break;
                 }
             }
         }
-    }    
+    }
     void Start()
     {
 
